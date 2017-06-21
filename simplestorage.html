@@ -14,7 +14,19 @@
 <body>
 <h3>Simple Storage dApp 예제</h3>
 <ul>
-  <li>컨트랙트 주소: <span id="contractAddr"></span></li>
+  <li>
+    
+    컨트랙트 주소: <span id="contractAddr"></span>
+     <button onclick="changeContractAddr()">주소변경</button>
+    <button onclick="getContractHistory()">컨트랙트 히스토리</button>
+    <!--
+    <div>※ 히스토리 호출 테스트 주소 : 0xab34cecb580f7e375f1db1d8c5ca182db56ee318
+    주소변경으로 컨트랙트 주소를 이 주소로 변경한 후 컨트랙트 히스토리 버튼을 눌러보세요.
+    </div>
+    -->
+	<div id="contractHistory"></div>
+
+  </li>
   <li>내 어카운트 주소: <span id="accountAddr"></span></li>
   <li>컨트랙트에 저장된 값: <span id="storedData"></span>
     <button onclick="getValue()">새로고침</button> (현재블록: <span id="lastBlock"></span>)</li>
@@ -30,6 +42,7 @@
 
 <script src="https://cdn.rawgit.com/ethereum/web3.js/develop/dist/web3.js"></script>
 <script>
+  /*
 var contractAddress = '0x41dab269bff36920c9c8a330779d0afb99dd61d8';
 var abi = [{"constant":false,"inputs":[{"name":"x","type":"uint256"}],"name":"set","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"get","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"}];
 var simpleStorageContract;
@@ -47,7 +60,7 @@ window.addEventListener('load', function() {
     window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
   }
   // Now you can start your app & access web3 freely:
-  startApp();
+  //startApp();
 });
 
 function startApp() {
@@ -97,5 +110,62 @@ function setValue() {
  });
 }
 
+
+function changeContractAddr()
+{
+	var newAddr = prompt("컨트랙트 주소를 입력하세요.");
+	if (newAddr)
+	{
+		contractAddress = newAddr;
+		startApp();
+	}
+}
+
+function getContractHistory()
+{
+    var block;
+	var historycnt = 0;
+	var historyList = "";
+	var lastBlockNumber;
+	document.getElementById("contractHistory").innerHTML = "컨트랙트 히스토리 불러오는중...<hr />";
+	var filter = web3.eth.filter({fromBlock:0, toBlock:"latest", address:contractAddress});
+	filter.get(function(e, r)
+	{
+		if(!e)
+		{
+			console.log("r.length : " + (r.length) + "\n");
+			if (r.length > 0)
+			{
+				for (i=r.length-1; i>0; i--)
+				{
+					if (lastBlockNumber != r[i].blockNumber)
+					{
+						historycnt++;
+						lastBlockNumber = r[i].blockNumber;
+						console.log(r[i]);
+						historyList += historycnt + ".  BlockNumber : <a href='https://ropsten.etherscan.io/block/" + r[i].blockNumber + "' target='_blank'>" + r[i].blockNumber + "</a>"
+									+ " / TransactionHash : " + r[i].transactionHash
+									+ " / TransactionLogIndex : " + r[i].transactionLogIndex
+									+ " / BlockHash : " + r[i].blockHash + "<Br /><Br />";
+						if (historycnt >= 10)
+						{
+							break;
+						}
+					}
+				}
+			}
+			else
+			{
+				historyList = "트랜잭션 로그가 없습니다.";
+			}
+			document.getElementById("contractHistory").innerHTML = historyList + "<Hr />";
+		}
+		else
+		{
+			console.log('Error: '+e);
+		}
+	});
+}
+*/
 </script>
 </html>
